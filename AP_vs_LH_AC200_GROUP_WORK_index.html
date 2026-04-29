@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AP vs LH — วิเคราะห์งบการเงิน 2566–2568</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;overflow:hidden;background:#0a1420;font-family:'Segoe UI',Tahoma,system-ui,sans-serif}
+.stage{width:100vw;height:100vh;background:#0a1420;position:relative;overflow:hidden;display:flex;flex-direction:column}
+.scene{display:none;flex:1;padding:48px 72px 24px;flex-direction:column;justify-content:center;position:relative}
+.scene.active{display:flex}
+
+/* Animations */
+.fade-in{opacity:0;transform:translateY(30px);transition:opacity .6s ease,transform .6s ease}
+.fade-in.show{opacity:1;transform:translateY(0)}
+.slide-left{opacity:0;transform:translateX(-50px);transition:opacity .55s ease,transform .55s ease}
+.slide-left.show{opacity:1;transform:translateX(0)}
+.slide-right{opacity:0;transform:translateX(50px);transition:opacity .55s ease,transform .55s ease}
+.slide-right.show{opacity:1;transform:translateX(0)}
+.scale-in{opacity:0;transform:scale(.5);transition:opacity .45s ease,transform .45s cubic-bezier(.175,.885,.32,1.275)}
+.scale-in.show{opacity:1;transform:scale(1)}
+.pop-in{opacity:0;transform:scale(.8) translateY(20px);transition:opacity .4s ease,transform .4s cubic-bezier(.175,.885,.32,1.275)}
+.pop-in.show{opacity:1;transform:scale(1) translateY(0)}
+
+/* Typography */
+.tag{font-size:13px;letter-spacing:.12em;color:#4a6a8a;text-transform:uppercase;margin-bottom:10px;font-weight:500}
+.h-giant{font-size:56px;font-weight:800;line-height:1.1;color:#fff}
+.h-big{font-size:36px;font-weight:700;line-height:1.2;color:#fff}
+.h-med{font-size:24px;font-weight:600;color:#e2e8f0}
+.h-sm{font-size:16px;font-weight:500;color:#94a3b8}
+.muted{color:#4a6a8a;font-size:14px;margin-top:4px}
+.accent-blue{color:#60a5fa}
+.accent-coral{color:#fb923c}
+.accent-green{color:#4ade80}
+.accent-red{color:#f87171}
+
+/* Cards & boxes */
+.box{background:#0f1f30;border:1px solid #1e3448;border-radius:14px;padding:20px 24px}
+.chip{display:inline-block;padding:4px 14px;border-radius:20px;font-size:12px;font-weight:600;letter-spacing:.05em}
+.chip-ap{background:#0d2a45;color:#60a5fa;border:1px solid #1e4a70}
+.chip-lh{background:#2d1205;color:#fb923c;border:1px solid #5c2a0f}
+
+/* Bar components */
+.bar-track{height:12px;background:#0f1f30;border-radius:6px;overflow:hidden}
+.bar-fill{height:100%;border-radius:6px;width:0;transition:width 1.4s cubic-bezier(.4,0,.2,1)}
+.horiz-bar-row{display:flex;align-items:center;gap:12px;margin-bottom:10px}
+.horiz-bar-label{font-size:12px;color:#64748b;width:160px;text-align:right;flex-shrink:0}
+.horiz-bar-track{flex:1;height:22px;background:#0f1f30;border-radius:5px;overflow:hidden;position:relative}
+.horiz-bar-fill{height:100%;border-radius:5px;width:0;transition:width 1.4s cubic-bezier(.4,0,.2,1);display:flex;align-items:center;justify-content:flex-end;padding-right:8px;font-size:11px;font-weight:700;color:#fff;letter-spacing:.02em}
+
+/* Grid */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+.four-col{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+
+/* Nav bar */
+.navbar{display:flex;align-items:center;justify-content:space-between;padding:16px 72px;background:#060e18;border-top:1px solid #0f1f30;flex-shrink:0}
+.dots{display:flex;gap:10px;align-items:center}
+.dot{width:10px;height:10px;border-radius:50%;background:#1e3448;cursor:pointer;transition:all .25s}
+.dot.active{background:#3b82f6;width:28px;border-radius:5px}
+.nav-btn{background:#0d2a45;color:#60a5fa;border:1px solid #1e4a70;padding:10px 28px;border-radius:25px;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s;letter-spacing:.05em}
+.nav-btn:hover{background:#1a3a5c}
+.scene-label{font-size:12px;color:#2d4a66;letter-spacing:.1em;font-weight:500}
+
+/* Progress bar */
+.progress{position:absolute;top:0;left:0;height:3px;background:linear-gradient(90deg,#3b82f6,#60a5fa);transition:width .4s ease;border-radius:0 2px 2px 0}
+
+/* Trend items */
+.trend-row{display:flex;align-items:center;gap:16px;padding:12px 0;border-bottom:1px solid #0f1f30}
+.trend-pills{display:flex;gap:8px;flex-wrap:wrap}
+.pill{padding:4px 12px;border-radius:6px;font-size:12px;font-weight:600}
+.pill-up{background:#0d2a18;border:1px solid #166534;color:#4ade80}
+.pill-down{background:#2d0d0d;border:1px solid #7f1d1d;color:#f87171}
+.pill-base{background:#0f1f30;border:1px solid #1e3448;color:#94a3b8}
+
+/* SWOT */
+.swot-cell{border-radius:10px;padding:14px 16px}
+.swot-s{background:#0a1f0d;border:1px solid #166534}
+.swot-w{background:#1f0a0a;border:1px solid #7f1d1d}
+.swot-o{background:#0a1430;border:1px solid #1e3a8a}
+.swot-t{background:#1f1500;border:1px solid #78350f}
+.swot-title{font-size:12px;font-weight:700;margin-bottom:8px;letter-spacing:.06em}
+.swot-item{font-size:12px;color:#94a3b8;margin-bottom:5px;padding-left:12px;position:relative;line-height:1.5}
+.swot-item::before{content:"▸";position:absolute;left:0;font-size:10px}
+
+/* Fullscreen hint */
+.hint{position:absolute;top:16px;right:72px;font-size:11px;color:#1e3448;letter-spacing:.05em}
+
+/* Big stat */
+.stat-card{text-align:center;padding:24px 16px}
+.stat-num{font-size:44px;font-weight:800;line-height:1}
+.stat-label{font-size:12px;color:#4a6a8a;margin-top:6px;letter-spacing:.04em}
+.stat-unit{font-size:14px;font-weight:400;color:#4a6a8a;margin-left:4px}
+</style>
+</head>
+<body>
+
+<div class="stage" id="stage">
+  <div class="progress" id="prog"></div>
+  <div class="hint" id="hint">กด F11 เพื่อเต็มจอ · ESC ออก · Space / → ถัดไป</div>
+
+  <!-- ═══════════════ SCENE 0: COVER ═══════════════ -->
+  <div class="scene active" id="s0">
+    <div style="display:flex;gap:80px;align-items:center;flex:1">
+      <div style="flex:1">
+        <div class="tag fade-in" style="transition-delay:.1s">AC200 · Section 106E · มหาวิทยาลัยกรุงเทพ · อาจารย์ธนภัทร อาภาวีระ</div>
+        <div class="h-giant fade-in" style="transition-delay:.3s;margin:16px 0 8px">วิเคราะห์<br><span style="color:#3b82f6">งบการเงิน</span></div>
+        <div class="h-med fade-in" style="transition-delay:.5s;color:#64748b">อุตสาหกรรมอสังหาริมทรัพย์ · SET · ปี 2566–2568</div>
+        <div style="display:flex;gap:12px;margin-top:28px;flex-wrap:wrap">
+          <div class="box scale-in" style="transition-delay:.7s;min-width:200px">
+            <div class="chip chip-ap" style="margin-bottom:10px">AP Thailand</div>
+            <div style="font-size:13px;color:#4a6a8a;margin-bottom:6px">บมจ. เอพี (ไทยแลนด์)</div>
+            <div class="stat-num accent-blue" style="font-size:32px">37,626<span class="stat-unit">ล้านบาท</span></div>
+            <div class="stat-label">รายได้รวม ปี 2568</div>
+          </div>
+          <div class="box scale-in" style="transition-delay:.9s;min-width:200px">
+            <div class="chip chip-lh" style="margin-bottom:10px">Land &amp; Houses</div>
+            <div style="font-size:13px;color:#4a6a8a;margin-bottom:6px">บมจ. แลนด์แอนด์เฮ้าส์</div>
+            <div class="stat-num accent-coral" style="font-size:32px">23,200<span class="stat-unit">ล้านบาท</span></div>
+            <div class="stat-label">รายได้รวม ปี 2568</div>
+          </div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;min-width:240px">
+        <div class="box pop-in" style="transition-delay:.8s">
+          <div style="font-size:11px;color:#4a6a8a;margin-bottom:4px">เครื่องมือวิเคราะห์</div>
+          <div style="font-size:15px;font-weight:600;color:#e2e8f0">Vertical Analysis</div>
+          <div style="font-size:12px;color:#64748b">ปี 2568 · ฐาน = รายได้รวม 100%</div>
+        </div>
+        <div class="box pop-in" style="transition-delay:1s">
+          <div style="font-size:11px;color:#4a6a8a;margin-bottom:4px">เครื่องมือวิเคราะห์</div>
+          <div style="font-size:15px;font-weight:600;color:#e2e8f0">Trend Analysis</div>
+          <div style="font-size:12px;color:#64748b">3 ปี · ปีฐาน 2567 = 100</div>
+        </div>
+        <div class="box pop-in" style="transition-delay:1.2s">
+          <div style="font-size:11px;color:#4a6a8a;margin-bottom:4px">เครื่องมือวิเคราะห์</div>
+          <div style="font-size:15px;font-weight:600;color:#e2e8f0">Financial Ratios</div>
+          <div style="font-size:12px;color:#64748b">8 อัตราส่วน · สภาพคล่อง + กำไร + หนี้สิน</div>
+        </div>
+        <div class="box pop-in" style="transition-delay:1.4s">
+          <div style="font-size:11px;color:#4a6a8a;margin-bottom:4px">เครื่องมือวิเคราะห์</div>
+          <div style="font-size:15px;font-weight:600;color:#e2e8f0">SWOT Analysis</div>
+          <div style="font-size:12px;color:#64748b">จุดแข็ง · จุดอ่อน · โอกาส · ภัยคุกคาม</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ SCENE 1: VERTICAL INCOME ═══════════════ -->
+  <div class="scene" id="s1">
+    <div class="fade-in" style="transition-delay:.05s;margin-bottom:20px">
+      <div class="tag">2.1 · Vertical Analysis · งบกำไรขาดทุนเบ็ดเสร็จ ปี 2568</div>
+      <div class="h-big">โครงสร้างรายได้และต้นทุน <span class="accent-blue">%</span></div>
+      <div class="muted">รายได้รวม = ฐาน 100% · เปรียบเทียบ AP Thailand vs Land &amp; Houses</div>
+    </div>
+    <div style="display:flex;gap:16px;margin-bottom:14px;font-size:13px">
+      <span style="display:flex;align-items:center;gap:6px"><span style="width:14px;height:8px;background:#3b82f6;border-radius:3px;display:inline-block"></span><span style="color:#94a3b8">AP Thailand</span></span>
+      <span style="display:flex;align-items:center;gap:6px;margin-left:8px"><span style="width:14px;height:8px;background:#f97316;border-radius:3px;display:inline-block"></span><span style="color:#94a3b8">Land &amp; Houses</span></span>
+    </div>
+    <div id="vbars" style="flex:1"></div>
+    <div class="two-col" style="margin-top:16px">
+      <div class="box slide-left" style="transition-delay:.2s">
+        <div class="chip chip-ap" style="margin-bottom:8px">AP — ประเด็นสำคัญ</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.9">รายได้หลักจากอสังหาฯ <span class="accent-blue" style="font-weight:700">96.4%</span> · ต้นทุนขาย <span class="accent-blue" style="font-weight:700">67.6%</span> · กำไรสุทธิ <span class="accent-green" style="font-weight:700">11.5%</span> · SG&amp;A <span style="color:#e2e8f0;font-weight:700">18.5%</span></div>
+      </div>
+      <div class="box slide-right" style="transition-delay:.3s">
+        <div class="chip chip-lh" style="margin-bottom:8px">LH — ประเด็นสำคัญ</div>
+        <div style="font-size:13px;color:#94a3b8;line-height:1.9">อสังหาฯ <span class="accent-coral" style="font-weight:700">56.6%</span> + โรงแรม/เช่า <span class="accent-coral" style="font-weight:700">32.9%</span> · กำไรสุทธิ <span class="accent-green" style="font-weight:700">16.0%</span> · ต้นทุนเช่า <span style="color:#e2e8f0;font-weight:700">9.0%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ SCENE 2: VERTICAL BALANCE ═══════════════ -->
+  <div class="scene" id="s2">
+    <div class="fade-in" style="transition-delay:.05s;margin-bottom:20px">
+      <div class="tag">2.1 · Vertical Analysis · งบแสดงฐานะการเงิน ปี 2568</div>
+      <div class="h-big">โครงสร้างสินทรัพย์ &amp; หนี้สิน <span class="accent-blue">%</span></div>
+      <div class="muted">สินทรัพย์รวม = ฐาน 100%</div>
+    </div>
+    <div class="two-col" style="flex:1">
+      <div>
+        <div class="chip chip-ap" style="margin-bottom:14px;display:block">AP Thailand · สินทรัพย์รวม 85,661 ล้านบาท</div>
+        <div id="bsAP"></div>
+      </div>
+      <div>
+        <div class="chip chip-lh" style="margin-bottom:14px;display:block">Land &amp; Houses · สินทรัพย์รวม 141,002 ล้านบาท</div>
+        <div id="bsLH"></div>
+      </div>
+    </div>
+    <div class="two-col" style="margin-top:16px">
+      <div class="box slide-left" style="transition-delay:.6s">
+        <div style="font-size:12px;color:#94a3b8;line-height:1.8">สินค้าคงเหลือสูงถึง <span class="accent-blue" style="font-weight:700">85.3%</span> ของสินทรัพย์ · สินทรัพย์หมุนเวียน <span class="accent-blue" style="font-weight:700">89.0%</span> · D/E ต่ำ โครงสร้างทุนแข็งแกร่ง</div>
+      </div>
+      <div class="box slide-right" style="transition-delay:.7s">
+        <div style="font-size:12px;color:#94a3b8;line-height:1.8">สินทรัพย์ไม่หมุนเวียนสูง <span class="accent-coral" style="font-weight:700">50.5%</span> · JV &amp; บริษัทร่วม <span class="accent-coral" style="font-weight:700">20.8%</span> สะท้อนธุรกิจระยะยาว · หนี้สินสูง <span style="color:#f87171;font-weight:700">62.7%</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ SCENE 3: TREND ═══════════════ -->
+  <div class="scene" id="s3">
+    <div class="fade-in" style="transition-delay:.05s;margin-bottom:16px">
+      <div class="tag">2.2 · Trend Percentage Analysis · 2566 – 2567 – 2568</div>
+      <div class="h-big">แนวโน้ม 3 ปี — ดัชนีเปรียบเทียบ</div>
+      <div class="muted">ปีฐาน 2567 = 100 · ค่าสูงกว่า 100 = ดีกว่าปีฐาน · ค่าต่ำกว่า 100 = แย่กว่าปีฐาน</div>
+    </div>
+    <div class="four-col" style="margin-bottom:16px">
+      <div class="box scale-in" style="transition-delay:.15s;text-align:center">
+        <div style="font-size:11px;color:#4a6a8a">AP รายได้รวม</div>
+        <div style="font-size:11px;color:#60a5fa;margin-bottom:4px">2566→2568</div>
+        <div style="font-size:28px;font-weight:800;color:#e2e8f0">-2.0<span style="font-size:16px">%</span></div>
+      </div>
+      <div class="box scale-in" style="transition-delay:.25s;text-align:center">
+        <div style="font-size:11px;color:#4a6a8a">LH รายได้รวม</div>
+        <div style="font-size:11px;color:#fb923c;margin-bottom:4px">2566→2568</div>
+        <div style="font-size:28px;font-weight:800;color:#f87171">-23.1<span style="font-size:16px">%</span></div>
+      </div>
+      <div class="box scale-in" style="transition-delay:.35s;text-align:center">
+        <div style="font-size:11px;color:#4a6a8a">AP กำไรสุทธิ</div>
+        <div style="font-size:11px;color:#60a5fa;margin-bottom:4px">2566→2568</div>
+        <div style="font-size:28px;font-weight:800;color:#f87171">-28.7<span style="font-size:16px">%</span></div>
+      </div>
+      <div class="box scale-in" style="transition-delay:.45s;text-align:center">
+        <div style="font-size:11px;color:#4a6a8a">LH กำไรสุทธิ</div>
+        <div style="font-size:11px;color:#fb923c;margin-bottom:4px">2566→2568</div>
+        <div style="font-size:28px;font-weight:800;color:#f87171">-50.3<span style="font-size:16px">%</span></div>
+      </div>
+    </div>
+    <div class="fade-in" id="trendTable" style="transition-delay:.55s;flex:1"></div>
+  </div>
+
+  <!-- ═══════════════ SCENE 4: RATIOS ═══════════════ -->
+  <div class="scene" id="s4">
+    <div class="fade-in" style="transition-delay:.05s;margin-bottom:16px">
+      <div class="tag">2.3 · Financial Ratio Analysis · ปี 2568</div>
+      <div class="h-big">8 อัตราส่วนทางการเงิน</div>
+      <div class="muted">สภาพคล่อง · โครงสร้างหนี้สิน · ความสามารถในการทำกำไร</div>
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:14px;font-size:13px">
+      <span style="display:flex;align-items:center;gap:6px"><span style="width:14px;height:8px;background:#3b82f6;border-radius:3px;display:inline-block"></span><span style="color:#94a3b8">AP Thailand</span></span>
+      <span style="display:flex;align-items:center;gap:6px;margin-left:8px"><span style="width:14px;height:8px;background:#f97316;border-radius:3px;display:inline-block"></span><span style="color:#94a3b8">Land &amp; Houses</span></span>
+    </div>
+    <div class="two-col" style="flex:1;gap:12px">
+      <div id="ratioLeft"></div>
+      <div id="ratioRight"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ SCENE 5: SWOT ═══════════════ -->
+  <div class="scene" id="s5">
+    <div class="fade-in" style="transition-delay:.05s;margin-bottom:16px">
+      <div class="tag">SWOT Analysis · จุดแข็ง · จุดอ่อน · โอกาส · ภัยคุกคาม</div>
+      <div class="h-big">วิเคราะห์ขีดความสามารถทางการแข่งขัน</div>
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:14px">
+      <button onclick="swotSwitch('ap')" id="swotApBtn" style="background:#0d2a45;color:#60a5fa;border:1px solid #1e4a70;padding:8px 20px;border-radius:20px;font-size:13px;cursor:pointer;font-weight:600">AP Thailand</button>
+      <button onclick="swotSwitch('lh')" id="swotLhBtn" style="background:#0f1f30;color:#4a6a8a;border:1px solid #1e3448;padding:8px 20px;border-radius:20px;font-size:13px;cursor:pointer;font-weight:600">Land &amp; Houses</button>
+    </div>
+    <div class="two-col" id="swotGrid" style="flex:1;grid-template-rows:1fr 1fr;height:0;min-height:0"></div>
+  </div>
+
+  <!-- ═══════════════ SCENE 6: SUMMARY ═══════════════ -->
+  <div class="scene" id="s6">
+    <div class="fade-in" style="transition-delay:.05s;margin-bottom:20px">
+      <div class="tag">สรุปผลการวิเคราะห์งบการเงิน · AC200</div>
+      <div class="h-big">ผลสรุปเชิงเปรียบเทียบ</div>
+    </div>
+    <div class="two-col" style="flex:1;gap:20px">
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="chip chip-ap" style="display:inline-block;margin-bottom:4px">AP Thailand — จุดเด่น</div>
+        <div class="box slide-left" style="transition-delay:.15s">
+          <div style="font-size:13px;color:#4a6a8a;margin-bottom:4px">สภาพคล่อง</div>
+          <div style="font-size:22px;font-weight:800;color:#60a5fa">4.43x <span style="font-size:14px;color:#64748b">Current Ratio</span></div>
+          <div style="font-size:12px;color:#4a6a8a;margin-top:2px">สภาพคล่องดีเยี่ยม สินทรัพย์หมุนเวียนสูงกว่าหนี้สินมาก</div>
+        </div>
+        <div class="box slide-left" style="transition-delay:.25s">
+          <div style="font-size:13px;color:#4a6a8a;margin-bottom:4px">โครงสร้างหนี้สิน</div>
+          <div style="font-size:22px;font-weight:800;color:#60a5fa">0.86x <span style="font-size:14px;color:#64748b">D/E Ratio</span></div>
+          <div style="font-size:12px;color:#4a6a8a;margin-top:2px">ทุนมากกว่าหนี้ โครงสร้างการเงินแข็งแกร่ง</div>
+        </div>
+        <div class="box slide-left" style="transition-delay:.35s">
+          <div style="font-size:13px;color:#4a6a8a;margin-bottom:4px">ความสามารถชำระดอกเบี้ย</div>
+          <div style="font-size:22px;font-weight:800;color:#60a5fa">9.36x <span style="font-size:14px;color:#64748b">Interest Coverage</span></div>
+          <div style="font-size:12px;color:#4a6a8a;margin-top:2px">EBIT สูงกว่าดอกเบี้ย 9 เท่า — ปลอดภัยมาก</div>
+        </div>
+        <div class="box slide-left" style="transition-delay:.45s">
+          <div style="font-size:13px;color:#4a6a8a;margin-bottom:4px">ผลตอบแทน</div>
+          <div style="font-size:22px;font-weight:800;color:#60a5fa">ROA 5.1% <span style="font-size:14px;color:#64748b">/ ROE 9.6%</span></div>
+          <div style="font-size:12px;color:#4a6a8a;margin-top:2px">ใช้สินทรัพย์และทุนได้อย่างมีประสิทธิภาพสูงกว่า LH</div>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px">
+        <div class="chip chip-lh" style="display:inline-block;margin-bottom:4px">Land &amp; Houses — จุดเด่น</div>
+        <div class="box slide-right" style="transition-delay:.15s">
+          <div style="font-size:13px;color:#4a6a8a;margin-bottom:4px">อัตรากำไรสุทธิ</div>
+          <div style="font-size:22px;font-weight:800;color:#fb923c">16.0% <span style="font-size:14px;color:#64748b">Net Profit Margin</span></div>
+          <div style="font-size:12px;color:#4a6a8a;margin-top:2px">กำไรต่อรายได้สูงกว่า AP — ธุรกิจเช่าและโรงแรมช่วยหนุน</div>
+        </div>
+        <div class="box slide-right" style="transition-delay:.25s">
+          <div style="font-size:13px;color:#4a6a8a;margin-bottom:4px">ความหลากหลายรายได้</div>
+          <div style="font-size:22px;font-weight:800;color:#fb923c">32.9% <span style="font-size:14px;color:#64748b">โรงแรม+ค่าเช่า</span></div>
+          <div style="font-size:12px;color:#4a6a8a;margin-top:2px">Recurring income ลดความเสี่ยงจากวัฏจักรอสังหาฯ</div>
+        </div>
+        <div class="box slide-right" style="transition-delay:.35s">
+          <div style="font-size:13px;color:#4a6a8a;margin-bottom:4px">กระแสเงินสดดำเนินงาน</div>
+          <div style="font-size:22px;font-weight:800;color:#4ade80">+6,343 <span style="font-size:14px;color:#64748b">ล้านบาท (2568)</span></div>
+          <div style="font-size:12px;color:#4a6a8a;margin-top:2px">CFO ฟื้นตัวชัดเจน กลับมาเป็นบวกหลังจากติดลบ 2 ปีติดกัน</div>
+        </div>
+        <div class="box slide-right" style="transition-delay:.45s;border-color:#7f1d1d">
+          <div style="font-size:13px;color:#f87171;margin-bottom:4px">ข้อควรระวัง</div>
+          <div style="font-size:16px;font-weight:700;color:#f87171">D/E 1.68x · Coverage 2.89x</div>
+          <div style="font-size:12px;color:#4a6a8a;margin-top:2px">หนี้สินสูงในภาวะดอกเบี้ยขาขึ้น — ต้องติดตามอย่างใกล้ชิด</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════ SCENE 7: MEMBERS ═══════════════ -->
+  <div class="scene" id="s7">
+    <div class="fade-in" style="transition-delay:.05s;margin-bottom:24px">
+      <div class="tag">AC200 · Section 106E · มหาวิทยาลัยกรุงเทพ</div>
+      <div class="h-big">รายชื่อสมาชิกกลุ่ม</div>
+      <div class="muted">ผู้จัดทำรายงานวิเคราะห์งบการเงิน AP Thailand vs Land &amp; Houses</div>
+    </div>
+    <div style="flex:1;display:flex;align-items:center;justify-content:center">
+      <div style="width:100%;max-width:860px">
+        <!-- Table Header -->
+        <div style="display:grid;grid-template-columns:80px 1fr 1fr 180px;gap:0;border-radius:12px 12px 0 0;overflow:hidden">
+          <div style="background:#0d2a45;border:1px solid #1e4a70;padding:12px 16px;font-size:12px;font-weight:700;color:#60a5fa;letter-spacing:.08em;text-align:center">เลขที่</div>
+          <div style="background:#0d2a45;border:1px solid #1e4a70;border-left:none;padding:12px 16px;font-size:12px;font-weight:700;color:#60a5fa;letter-spacing:.08em">ชื่อ - สกุล</div>
+          <div style="background:#0d2a45;border:1px solid #1e4a70;border-left:none;padding:12px 16px;font-size:12px;font-weight:700;color:#60a5fa;letter-spacing:.08em">นามสกุล</div>
+          <div style="background:#0d2a45;border:1px solid #1e4a70;border-left:none;padding:12px 16px;font-size:12px;font-weight:700;color:#60a5fa;letter-spacing:.08em;text-align:center">รหัสนักศึกษา</div>
+        </div>
+        <!-- Members -->
+        <div id="memberRows"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <div class="navbar">
+    <div class="scene-label" id="sceneLabel">Scene 1 / 7</div>
+    <div class="dots">
+      <div class="dot active" onclick="goScene(0)" title="Cover"></div>
+      <div class="dot" onclick="goScene(1)" title="Vertical Income"></div>
+      <div class="dot" onclick="goScene(2)" title="Vertical Balance"></div>
+      <div class="dot" onclick="goScene(3)" title="Trend"></div>
+      <div class="dot" onclick="goScene(4)" title="Ratios"></div>
+      <div class="dot" onclick="goScene(5)" title="SWOT"></div>
+      <div class="dot" onclick="goScene(6)" title="Summary"></div>
+      <div class="dot" onclick="goScene(7)" title="Members"></div>
+    </div>
+    <button class="nav-btn" id="nextBtn" onclick="nextScene()">ถัดไป &nbsp;→</button>
+  </div>
+</div>
+
+<script>
+let cur=0,total=8;
+
+const sceneNames=['ปก / Cover','Vertical — งบกำไร','Vertical — งบดุล','Trend 3 ปี','Financial Ratios','SWOT Analysis','สรุปผล','รายชื่อสมาชิก'];
+
+function goScene(n){
+  document.getElementById('s'+cur).classList.remove('active');
+  cur=n;
+  document.getElementById('s'+cur).classList.add('active');
+  document.querySelectorAll('.dot').forEach((d,i)=>d.classList.toggle('active',i===cur));
+  document.getElementById('prog').style.width=((cur+1)/total*100)+'%';
+  document.getElementById('sceneLabel').textContent='Scene '+(cur+1)+' / '+total+' — '+sceneNames[cur];
+  document.getElementById('nextBtn').textContent=cur===total-1?'↺  เริ่มใหม่':'ถัดไป  →';
+  const sc=document.getElementById('s'+cur);
+  sc.querySelectorAll('.fade-in,.slide-left,.slide-right,.scale-in,.pop-in').forEach(el=>el.classList.remove('show'));
+  setTimeout(()=>animateScene(cur),80);
+}
+
+function nextScene(){goScene(cur===total-1?0:cur+1);}
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' ')nextScene();
+  if(e.key==='ArrowLeft')goScene(Math.max(0,cur-1));
+});
+
+function animateScene(n){
+  const sc=document.getElementById('s'+n);
+  sc.querySelectorAll('.fade-in,.slide-left,.slide-right,.scale-in,.pop-in').forEach(el=>{
+    const d=parseFloat(el.style.transitionDelay||'0')*1000;
+    setTimeout(()=>el.classList.add('show'),d+30);
+  });
+  if(n===1)setTimeout(buildVBars,250);
+  if(n===2)setTimeout(buildBS,250);
+  if(n===3)setTimeout(buildTrend,400);
+  if(n===4)setTimeout(buildRatios,250);
+  if(n===5)setTimeout(()=>buildSwot('ap'),200);
+  if(n===7)setTimeout(buildMembers,200);
+}
+
+/* ─── VERTICAL INCOME BARS ─── */
+function buildVBars(){
+  const data=[
+    {lbl:'รายได้จากอสังหาริมทรัพย์',ap:96.4,lh:56.6,maxV:100},
+    {lbl:'รายได้จากโรงแรม / ค่าเช่า',ap:0,lh:32.9,maxV:50},
+    {lbl:'รวมต้นทุนขายและบริการ',ap:67.6,lh:67.0,maxV:100},
+    {lbl:'กำไรขั้นต้น',ap:31.6,lh:25.9,maxV:50},
+    {lbl:'ค่าใช้จ่าย SG&A',ap:18.5,lh:16.3,maxV:30},
+    {lbl:'กำไรสุทธิ',ap:11.5,lh:16.0,maxV:25},
+  ];
+  const c=document.getElementById('vbars');c.innerHTML='';
+  data.forEach((r,i)=>{
+    const div=document.createElement('div');
+    div.className='horiz-bar-row';div.style.opacity='0';div.style.transition='opacity .35s';div.style.transitionDelay=(i*.08)+'s';
+    div.innerHTML=`<div class="horiz-bar-label">${r.lbl}</div>
+      <div style="flex:1">
+        <div style="display:flex;gap:6px;align-items:center;margin-bottom:4px">
+          <div class="horiz-bar-track" style="flex:1"><div class="horiz-bar-fill" id="vi_ap${i}" style="background:#3b82f6"></div></div>
+          <span style="font-size:11px;color:#60a5fa;width:36px;font-weight:600">${r.ap}%</span>
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <div class="horiz-bar-track" style="flex:1"><div class="horiz-bar-fill" id="vi_lh${i}" style="background:#f97316"></div></div>
+          <span style="font-size:11px;color:#fb923c;width:36px;font-weight:600">${r.lh}%</span>
+        </div>
+      </div>`;
+    c.appendChild(div);
+    setTimeout(()=>{div.style.opacity='1';setTimeout(()=>{
+      const fa=document.getElementById('vi_ap'+i),fl=document.getElementById('vi_lh'+i);
+      if(fa)fa.style.width=(r.ap/r.maxV*100)+'%';if(fl)fl.style.width=(r.lh/r.maxV*100)+'%';
+    },80);},i*100+150);
+  });
+}
+
+/* ─── BALANCE SHEET BARS ─── */
+function buildBS(){
+  const apD=[{l:'สินทรัพย์หมุนเวียนรวม',v:89.0,c:'#3b82f6'},{l:'สินค้าคงเหลือ (Inventory)',v:85.3,c:'#22d3ee'},{l:'เงินสด & รายการเทียบเท่า',v:2.2,c:'#4ade80'},{l:'สินทรัพย์ไม่หมุนเวียน',v:11.0,c:'#a78bfa'},{l:'หนี้สินรวม',v:46.2,c:'#f87171'},{l:'ส่วนของผู้ถือหุ้น',v:53.8,c:'#4ade80'}];
+  const lhD=[{l:'สินทรัพย์หมุนเวียนรวม',v:49.5,c:'#3b82f6'},{l:'สินค้าคงเหลือ (Inventory)',v:43.2,c:'#22d3ee'},{l:'เงินสด & รายการเทียบเท่า',v:4.5,c:'#4ade80'},{l:'สินทรัพย์ไม่หมุนเวียน',v:50.5,c:'#a78bfa'},{l:'เงินลงทุนใน JV / บ.ร่วม',v:20.8,c:'#f59e0b'},{l:'หนี้สินรวม',v:62.7,c:'#f87171'},{l:'ส่วนของผู้ถือหุ้น',v:37.3,c:'#4ade80'}];
+  function fill(id,data){
+    const c=document.getElementById(id);c.innerHTML='';
+    data.forEach((r,i)=>{
+      const d=document.createElement('div');d.style.marginBottom='10px';d.style.opacity='0';d.style.transition='opacity .3s';d.style.transitionDelay=(i*.09)+'s';
+      d.innerHTML=`<div style="display:flex;justify-content:space-between;margin-bottom:3px"><span style="font-size:12px;color:#64748b">${r.l}</span><span style="font-size:12px;font-weight:700;color:${r.c}">${r.v}%</span></div><div class="bar-track"><div class="bar-fill" id="${id}f${i}" style="background:${r.c}"></div></div>`;
+      c.appendChild(d);
+      setTimeout(()=>{d.style.opacity='1';setTimeout(()=>{const f=document.getElementById(id+'f'+i);if(f)f.style.width=r.v+'%';},80);},i*100+150);
+    });
+  }
+  fill('bsAP',apD);fill('bsLH',lhD);
+}
+
+/* ─── TREND TABLE ─── */
+function buildTrend(){
+  const c=document.getElementById('trendTable');c.innerHTML='';
+  const rows=[
+    {lbl:'AP — รายได้รวม (ล้านบาท)',col:'#3b82f6',v:[{y:'2566',n:38399,idx:102.5,up:true},{y:'2567',n:37460,idx:100,base:true},{y:'2568',n:37626,idx:100.4,up:true}]},
+    {lbl:'LH — รายได้รวม (ล้านบาท)',col:'#f97316',v:[{y:'2566',n:30170,idx:107.2,up:true},{y:'2567',n:28151,idx:100,base:true},{y:'2568',n:23200,idx:82.4,up:false}]},
+    {lbl:'AP — กำไรสุทธิ (ล้านบาท)',col:'#3b82f6',v:[{y:'2566',n:6054,idx:120.6,up:true},{y:'2567',n:5020,idx:100,base:true},{y:'2568',n:4316,idx:86.0,up:false}]},
+    {lbl:'LH — กำไรสุทธิ (ล้านบาท)',col:'#f97316',v:[{y:'2566',n:7495,idx:136.0,up:true},{y:'2567',n:5511,idx:100,base:true},{y:'2568',n:3723,idx:67.6,up:false}]},
+    {lbl:'AP — CFO (ล้านบาท)',col:'#3b82f6',v:[{y:'2566',n:-10836,idx:null,up:false},{y:'2567',n:3076,idx:100,base:true},{y:'2568',n:1836,idx:59.7,up:false}]},
+    {lbl:'LH — CFO (ล้านบาท)',col:'#f97316',v:[{y:'2566',n:-3645,idx:null,up:false},{y:'2567',n:-4158,idx:100,base:true},{y:'2568',n:6343,idx:null,up:true}]},
+  ];
+  const hdr=document.createElement('div');
+  hdr.style.cssText='display:grid;grid-template-columns:220px repeat(3,1fr);gap:8px;padding:6px 0 8px;border-bottom:1px solid #1e3448;margin-bottom:4px';
+  hdr.innerHTML='<span style="font-size:11px;color:#2d4a66">รายการ</span>'+['2566','2567 (ฐาน)','2568'].map(y=>`<span style="font-size:11px;color:#2d4a66;text-align:center">${y}</span>`).join('');
+  c.appendChild(hdr);
+  rows.forEach((r,ri)=>{
+    const row=document.createElement('div');
+    row.style.cssText='display:grid;grid-template-columns:220px repeat(3,1fr);gap:8px;padding:9px 0;border-bottom:1px solid #0f1f30;opacity:0;transition:opacity .4s;transition-delay:'+(ri*.1)+'s;align-items:center';
+    let cells=`<span style="font-size:12px;font-weight:600;color:${r.col}">${r.lbl}</span>`;
+    r.v.forEach(v=>{
+      const fmt=n=>n===null?'—':Math.abs(n).toLocaleString()+(n<0?'<span style="color:#f87171"> (ขาดทุน)</span>':'');
+      const idxTxt=v.base?'<span style="background:#1e3448;padding:2px 8px;border-radius:4px;font-size:10px;color:#64748b;font-weight:600">BASE 100</span>':v.idx===null?'':`<span style="font-size:11px;font-weight:700;color:${v.up?'#4ade80':'#f87171'}">idx: ${v.idx.toFixed(1)}</span>`;
+      cells+=`<div style="text-align:center"><div style="font-size:12px;color:#e2e8f0;font-weight:500">${fmt(v.n)}</div><div style="margin-top:3px">${idxTxt}</div></div>`;
+    });
+    row.innerHTML=cells;c.appendChild(row);
+    setTimeout(()=>row.style.opacity='1',ri*120+200);
+  });
+}
+
+/* ─── RATIO BARS ─── */
+function buildRatios(){
+  const ratios=[
+    {n:'Current Ratio (x)',ap:4.43,lh:1.95,max:6,note:'AP ดีมาก · อุตสาหกรรมปกติ 1.5–2x'},
+    {n:'Quick Ratio (x)',ap:0.12,lh:0.20,max:1,note:'ทั้งคู่ต่ำ — สินค้าคงเหลือสูงมาก'},
+    {n:'D/E Ratio (x)',ap:0.86,lh:1.68,max:2.5,note:'AP แข็งแกร่งกว่า · LH หนี้สูง'},
+    {n:'Interest Coverage (x)',ap:9.36,lh:2.89,max:12,note:'AP ปลอดภัย · LH ต้องระวัง'},
+    {n:'Gross Profit Margin (%)',ap:31.2,lh:26.7,max:50,note:'AP margin สูงกว่าจากสัดส่วนอสังหาฯ'},
+    {n:'Net Profit Margin (%)',ap:11.5,lh:16.0,max:25,note:'LH ดีกว่า — รายได้เช่าช่วยหนุน margin'},
+    {n:'Return on Assets — ROA (%)',ap:5.1,lh:2.6,max:10,note:'AP ใช้สินทรัพย์มีประสิทธิภาพกว่า'},
+    {n:'Return on Equity — ROE (%)',ap:9.6,lh:7.1,max:15,note:'AP ให้ผลตอบแทนผู้ถือหุ้นสูงกว่า'},
+  ];
+  const left=ratios.slice(0,4),right=ratios.slice(4);
+  function render(id,data,offset){
+    const c=document.getElementById(id);c.innerHTML='';
+    data.forEach((r,i)=>{
+      const d=document.createElement('div');d.style.cssText='margin-bottom:14px;opacity:0;transition:opacity .35s;transition-delay:'+((i+offset)*.1)+'s';
+      d.innerHTML=`<div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:4px">
+        <span style="font-size:12px;font-weight:600;color:#e2e8f0">${r.n}</span>
+        <span style="font-size:12px"><span style="color:#60a5fa;font-weight:700">${r.ap}</span><span style="color:#2d4a66;margin:0 6px">vs</span><span style="color:#fb923c;font-weight:700">${r.lh}</span></span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:4px">
+        <div class="bar-track"><div class="bar-fill" id="r_ap_${id}_${i}" style="background:#3b82f6"></div></div>
+        <div class="bar-track"><div class="bar-fill" id="r_lh_${id}_${i}" style="background:#f97316"></div></div>
+      </div>
+      <div style="font-size:10px;color:#2d4a66">${r.note}</div>`;
+      c.appendChild(d);
+      setTimeout(()=>{d.style.opacity='1';setTimeout(()=>{
+        const fa=document.getElementById('r_ap_'+id+'_'+i),fl=document.getElementById('r_lh_'+id+'_'+i);
+        if(fa)fa.style.width=(r.ap/r.max*100)+'%';if(fl)fl.style.width=(r.lh/r.max*100)+'%';
+      },80);},( i+offset)*110+200);
+    });
+  }
+  render('ratioLeft',left,0);render('ratioRight',right,4);
+}
+
+/* ─── SWOT ─── */
+const swotData={
+  ap:{
+    s:{tc:'#4ade80',items:['Current Ratio 4.43x — สภาพคล่องดีเยี่ยม','D/E 0.86x — โครงสร้างหนี้แข็งแกร่ง','Interest Coverage 9.36x — ชำระดอกเบี้ยได้ดีมาก','ROA 5.1% / ROE 9.6% — สูงกว่า LH']},
+    w:{tc:'#f87171',items:['Quick Ratio 0.12x — สภาพคล่องเร็วต่ำมาก','Inventory 85.3% ของสินทรัพย์ — ระบาย stock ช้า','กำไรสุทธิลดลงต่อเนื่อง 3 ปีติดต่อกัน','CFO ลดลง -40% จาก 2567→2568']},
+    o:{tc:'#60a5fa',items:['หนี้สินลดลง ทำให้มีความยืดหยุ่นการลงทุน','ตลาดที่อยู่อาศัยกลาง-สูงยังเติบโต','ขยายสู่ Mixed-use Development']},
+    t:{tc:'#fbbf24',items:['ดอกเบี้ยสูง กระทบกำลังซื้อลูกค้า','เศรษฐกิจชะลอตัว — กำลังซื้อลด','คู่แข่งรุนแรง LH · Origin · SC Asset']}
+  },
+  lh:{
+    s:{tc:'#4ade80',items:['Net Margin 16.0% — สูงกว่า AP อย่างชัดเจน','รายได้หลากหลาย โรงแรม+ค่าเช่า 32.9%','เงินสดสูง 6,416 ล้านบาท','CFO ฟื้นตัว +6,343 ล้าน (2568)']},
+    w:{tc:'#f87171',items:['D/E 1.68x — ภาระหนี้สูง','Interest Coverage 2.89x — ตึงตัวในช่วงดอกเบี้ยขาขึ้น','รายได้รวมลดลง -17.6% ปี 2568','กำไรสุทธิลดลง 3 ปีติดกัน (-50% สะสม)']},
+    o:{tc:'#60a5fa',items:['Recurring income จากโรงแรม/เช่าเป็น buffer','JV 20.8% ของสินทรัพย์ = ผลตอบแทนระยะยาว','ฐานสินทรัพย์ใหญ่ 141,002 ล้านบาท']},
+    t:{tc:'#fbbf24',items:['ดอกเบี้ยสูง — กระทบ Coverage ที่ตึงอยู่แล้ว','ต้นทุน Right-of-use lease สูง 15.65%','การแข่งขันอสังหาฯ ทวีความรุนแรง']}
+  }
+};
+
+function buildSwot(who){
+  const d=swotData[who];
+  const cfg={s:{cls:'swot-s',title:'S — จุดแข็ง'},w:{cls:'swot-w',title:'W — จุดอ่อน'},o:{cls:'swot-o',title:'O — โอกาส'},t:{cls:'swot-t',title:'T — ภัยคุกคาม'}};
+  const g=document.getElementById('swotGrid');
+  g.style.opacity='0';g.style.transition='opacity .2s';
+  setTimeout(()=>{
+    g.innerHTML='';
+    ['s','w','o','t'].forEach(k=>{
+      const box=document.createElement('div');
+      box.className='swot-cell '+cfg[k].cls;
+      box.innerHTML=`<div class="swot-title" style="color:${d[k].tc}">${cfg[k].title}</div>${d[k].items.map(it=>`<div class="swot-item">${it}</div>`).join('')}`;
+      g.appendChild(box);
+    });
+    g.style.opacity='1';
+  },200);
+}
+
+function swotSwitch(who){
+  document.getElementById('swotApBtn').style.background=who==='ap'?'#0d2a45':'#0f1f30';
+  document.getElementById('swotApBtn').style.color=who==='ap'?'#60a5fa':'#4a6a8a';
+  document.getElementById('swotLhBtn').style.background=who==='lh'?'#2d1205':'#0f1f30';
+  document.getElementById('swotLhBtn').style.color=who==='lh'?'#fb923c':'#4a6a8a';
+  buildSwot(who);
+}
+
+/* ─── MEMBERS ─── */
+function buildMembers(){
+  const members=[
+    {no:'28',first:'นายนิธิโชติ',last:'ทองน้อย',id:'1680209200'},
+    {no:'29',first:'พีรวิชญ์',last:'วงศ์ยุทธนานนท์',id:'1680209549'},
+    {no:'38',first:'อโยธิดา',last:'รักษาศรี',id:'1680214333'},
+    {no:'50',first:'กุลสตรี',last:'บุญเลี้ยง',id:'1680220595'},
+    {no:'52',first:'สิริมงคล',last:'สุขาล',id:'1680220892'},
+    {no:'68',first:'ศศินา',last:'พรมกล่ำ',id:'1680224456'},
+  ];
+  const c=document.getElementById('memberRows');
+  c.innerHTML='';
+  members.forEach((m,i)=>{
+    const isEven=i%2===0;
+    const row=document.createElement('div');
+    row.style.cssText='display:grid;grid-template-columns:80px 1fr 1fr 180px;gap:0;opacity:0;transition:opacity .4s;transition-delay:'+(i*.12)+'s';
+    const bg=isEven?'#0a1628':'#0c1c34';
+    const borderStyle='border:1px solid #1e3448;border-top:none;';
+    row.innerHTML=`
+      <div style="background:${bg};${borderStyle}padding:14px 16px;font-size:14px;font-weight:700;color:#3b82f6;text-align:center">${m.no}</div>
+      <div style="background:${bg};${borderStyle}border-left:none;padding:14px 16px;font-size:15px;font-weight:600;color:#e2e8f0">${m.first}</div>
+      <div style="background:${bg};${borderStyle}border-left:none;padding:14px 16px;font-size:15px;color:#94a3b8">${m.last}</div>
+      <div style="background:${bg};${borderStyle}border-left:none;padding:14px 16px;font-size:13px;color:#4a6a8a;text-align:center;font-family:monospace;letter-spacing:.04em">${m.id}</div>`;
+    if(i===members.length-1){
+      // round bottom corners on last row
+      row.style.borderRadius='0 0 12px 12px';
+      row.style.overflow='hidden';
+    }
+    c.appendChild(row);
+    setTimeout(()=>row.style.opacity='1', i*130+200);
+  });
+}
+
+/* Init */
+document.getElementById('prog').style.width=((1)/total*100)+'%';
+document.getElementById('sceneLabel').textContent='Scene 1 / '+total+' — '+sceneNames[0];
+setTimeout(()=>animateScene(0),300);
+</script>
+</body>
+</html>
